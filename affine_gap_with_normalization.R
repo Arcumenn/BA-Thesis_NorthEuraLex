@@ -6,11 +6,11 @@ affine_v = Vectorize(affine)
 avg_levenshtein_dists = 
   matrix(1, nrow(languages), nrow(languages)) # add-1 smoothing
 
-for (i in 1:(2 - 1)) {
+for (i in 1:(nrow(languages) - 1)) {
   # print to see the program is actually doing something 
   # (because the loop takes a while)
   print(i)
-  for (j in (i + 1):2) {
+  for (j in (i + 1):nrow(languages)) {
     # creates a tibble comparing two languages
     joined_tibble = 
       inner_join(language_params[[i]], language_params[[j]], 
@@ -20,19 +20,18 @@ for (i in 1:(2 - 1)) {
       group_by(Concept_ID) %>%
       slice_min(order_by = avg_levenshtein_dist, with_ties = F)
       
-    # avg_levenshtein_dists[i, j] = avg_levenshtein_dists[j, i] = 
-        # mean(joined_tibble$avg_levenshtein_dist)
     
     gamma = 0
-    for (k in 1:(nrow(joined_tibble) - 1)) {
-      for (l in (k + 1):nrow(joined_tibble)) {
-        gamma = 
-          gamma + 
-          adist(joined_tibble$ASJP.x[k], joined_tibble$ASJP.y[l]) / 
-          max(nchar(joined_tibble$ASJP.x[k]), nchar(joined_tibble$ASJP.y[l]))
-      }
+    for (k in 1:nrow(joined_tibble)) {
+        for (l in 1:nrow(joined_tibble)) {
+            if(k == l){next}
+            gamma = 
+            gamma + 
+            adist(joined_tibble$ASJP.x[k], joined_tibble$ASJP.y[l]) / 
+            max(nchar(joined_tibble$ASJP.x[k]), nchar(joined_tibble$ASJP.y[l]))
+        }
     }
-    gamma = gamma / (nrow(joined_tibble) * (nrow(joined_tibble) - 1) / 2)
+    gamma = gamma / (nrow(joined_tibble) * (nrow(joined_tibble) - 1))
     avg_levenshtein_dists[i, j] = avg_levenshtein_dists[j, i] =
       mean(joined_tibble$avg_levenshtein_dist) / gamma
   }

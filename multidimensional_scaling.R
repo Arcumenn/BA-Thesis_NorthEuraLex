@@ -29,11 +29,10 @@ for (i in 1:nClasses) {
 
 setwd("C:/Users/stein/Dropbox/Studium/7. Semester/BA-Thesis/BA-Thesis_NorthEuraLex")
 
-pairwise_language_distances = read.csv("language_distances.csv")
-pairwise_language_distances = read.csv("language_distances_averaged.csv")
-pairwise_language_distances = read.csv("ldn.csv")
-pairwise_language_distances = read.csv("ldnd.csv")
-pairwise_language_distances = read.csv("ldnd_notscaledto1.csv")
+
+pairwise_language_distances = read.csv("./language_distances/ldn_dists.csv")
+pairwise_language_distances = read.csv("./language_distances/ldnd_dists2.csv")
+pairwise_language_distances = read.csv("./language_distances/pmi_dists.csv")
 
 library(spData)
 library(sf)
@@ -159,4 +158,5 @@ geodata_uralic %>%
 
 library(glottoTrees)
 my_list = list(c("Africa", "Australia", "Eurasia", "Papunesia", "South America", "North America"))
-my_supertree = assemble_supertree(macro_groups = my_list)
+my_supertree = assemble_supertree(macro_groups = my_list) %>% abridge_labels()
+my_tree = keep_as_tip(my_supertree, geodata$glotto_code)
